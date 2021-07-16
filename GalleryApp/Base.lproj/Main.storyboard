@@ -61,7 +61,18 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="3zc-eS-2U1" secondAttribute="trailing" id="sEx-Rd-m3t"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Gallery" id="Yeo-sp-cck"/>
+                    <navigationItem key="navigationItem" title="Gallery" id="Yeo-sp-cck">
+                        <barButtonItem key="leftBarButtonItem" style="plain" systemItem="undo" id="18C-Of-bMK">
+                            <connections>
+                                <action selector="UndoAll:" destination="BYZ-38-t0r" id="lPN-Yj-ll3"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="Yv4-lV-9OE">
+                            <connections>
+                                <action selector="moreColumn:" destination="BYZ-38-t0r" id="Mev-Z1-bo8"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="collectionView" destination="3zc-eS-2U1" id="AMB-YX-xRw"/>
                     </connections>

@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     
     let cellSpacing: CGFloat = 1
     let lineSpacing: CGFloat = 1
-    let columns: CGFloat = 3
+    var columns: CGFloat = 3
     
     var images: [URL] = []
     
@@ -32,7 +32,20 @@ class ViewController: UIViewController {
         collectionView.delegate = self
         
     }
-
+    
+    @IBAction func moreColumn(_ sender: UIBarButtonItem) {
+        columns += 1
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
+    
+    @IBAction func UndoAll(_ sender: UIBarButtonItem) {
+        columns = 3
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
 }
 
 class ImageItemCell: UICollectionViewCell {
