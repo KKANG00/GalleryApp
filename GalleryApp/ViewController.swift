@@ -7,6 +7,8 @@
 
 import UIKit
 
+var cachedImage: [URL:UIImage] = [:]
+
 class ViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
@@ -41,20 +43,38 @@ class ImageItemCell: UICollectionViewCell {
             self.imageView.image = image
         }
     }
+    
+    func downloadImage(_ withUrl: URL) {
+        // networking 비동기 처리
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            // [weak self] 약한 참조를 위한 guard문
+            guard let self = self else { return }
+            
+            if let cachedImage = cachedImage[withUrl] {
+                self.showImage(cachedImage)
+            }
+            else {
+                if let data = try? Data(contentsOf: withUrl), let safeImage = UIImage(data: data) {
+                    // 이미지 캐싱 저장
+                    cachedImage[withUrl] = safeImage
+                    
+                    self.showImage(safeImage)
+                }
+            }
+            
+        }
+    }
 }
 
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageItemCell", for: indexPath) as! ImageItemCell
         
-        if let url = URL(string: "https://images.unsplash.com/photo-1579989939916-4fc37667022b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"),
-           let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-            cell.showImage(image)
-        }
+        cell.downloadImage(images[indexPath.row])
         
         return cell
     }
