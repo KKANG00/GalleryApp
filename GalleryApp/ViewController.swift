@@ -58,24 +58,33 @@ class ImageItemCell: UICollectionViewCell {
     }
     
     func downloadImage(_ withUrl: URL) {
-        // networking 비동기 처리
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            // [weak self] 약한 참조를 위한 guard문
-            guard let self = self else { return }
-            
-            if let cachedImage = cachedImage[withUrl] {
-                self.showImage(cachedImage)
-            }
-            else {
-                if let data = try? Data(contentsOf: withUrl), let safeImage = UIImage(data: data) {
-                    // 이미지 캐싱 저장
-                    cachedImage[withUrl] = safeImage
-                    
-                    self.showImage(safeImage)
-                }
-            }
-            
+        
+        if let safeImage = cachedImage[withUrl]{
+            self.showImage(safeImage)
+            return
         }
+        
+        // networking 비동기 처리
+        // Using GlobalQueue
+//        DispatchQueue.global(qos: .utility).async { [weak self] in
+//            // [weak self] 약한 참조를 위한 guard문
+//            guard let self = self else { return }
+//
+//            guard let data = try? Data(contentsOf: withUrl), let safeImage = UIImage(data: data) else { return }
+//
+//            cachedImage[withUrl] = safeImage
+//            self.showImage(safeImage)
+//        }
+        
+        // Using URLSession
+        URLSession.shared.dataTask(with: withUrl) { data, reponse, error in
+            if let error = error { print("Fail to load image", error.localizedDescription) }
+
+            guard let safeData = data, let safeImage = UIImage(data: safeData) else { return }
+
+            cachedImage[withUrl] = safeImage
+            self.showImage(safeImage)
+        }.resume()
     }
 }
 
